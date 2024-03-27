@@ -1,0 +1,13 @@
+apiVersion: piraeus.io/v1
+kind: LinstorSatelliteConfiguration
+metadata:
+  name: storage-satellites
+spec:
+  storagePools:
+    - name: sdb-pool
+      lvmPool:
+        volumeGroup: sdb-vg
+      source:
+        hostDevices:
+          - /dev/sdb
+          

@@ -1,0 +1,58 @@
+version: '3'
+
+tasks:
+
+  test: 
+    cmds:
+      - kubectl apply -f linstor/test/test-pvc.yaml
+      - kubectl apply -f linstor/test/test-deployment.yaml
+
+  linstor: 
+    - kubectl apply -f linstor/talos-satellite-conf-patch.yaml
+    - kubectl apply -f linstor/tls-conf-patch.yaml
+    - kubectl apply -f linstor/cluster.yaml
+    - kubectl apply -f linstor/pool.yaml
+
+  get-piraeus:
+    cmds:
+      - git clone --branch v2 https://github.com/piraeusdatastore/piraeus-operator 
+      - mv piraeus-operator/charts/piraeus .
+      - rm -rf ./piraeus-operator
+
+  ns: 
+    cmds:
+      - kubectl create ns piraeus-datastore
+      - kubectl label ns piraeus-datastore pod-security.kubernetes.io/enforce=privileged
+
+
+  generate-tls:
+    dir: certs
+    cmds:
+      - task: ca
+      - task: keys
+      - task: certs
+      - task: deploy-secrets
+
+  ca:
+    dir: certs
+    cmds:
+      - openssl req -new -newkey rsa:4096 -days 3650 -nodes -x509 -keyout ca.key -out ca.crt -subj "/CN=linstor-internal-ca"
+  keys:
+    dir: certs
+    cmds:
+      - openssl genrsa -out controller.key 4096
+      - openssl genrsa -out satellite.key 4096
+
+  certs:
+    dir: certs
+    cmds:
+      - openssl req -new -sha256 -key controller.key -subj "/CN=linstor-controller" -out controller.csr
+      - openssl req -new -sha256 -key satellite.key -subj "/CN=linstor-satellite" -out satellite.csr
+      - openssl x509 -req -in controller.csr -CA ca.crt -CAkey ca.key -CAcreateserial -out controller.crt -days 3650 -sha256
+      - openssl x509 -req -in satellite.csr -CA ca.crt -CAkey ca.key -CAcreateserial -out satellite.crt -days 3650 -sha256
+
+  deploy-secrets: 
+    dir: certs
+    cmds:
+    - kubectl create secret generic linstor-controller-internal-tls -n piraeus-datastore --type=kubernetes.io/tls --from-file=ca.crt=ca.crt --from-file=tls.crt=controller.crt --from-file=tls.key=controller.key
+    - kubectl create secret generic linstor-satellite-internal-tls -n piraeus-datastore --type=kubernetes.io/tls --from-file=ca.crt=ca.crt --from-file=tls.crt=satellite.crt --from-file=tls.key=satellite.key

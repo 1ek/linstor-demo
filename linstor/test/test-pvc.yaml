@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: test-volume
+spec:
+  storageClassName: linstor-sdb
+  resources:
+    requests:
+      storage: 1Gi
+  accessModes:
+    - ReadWriteMany

@@ -1,0 +1,10 @@
+apiVersion: piraeus.io/v1
+kind: LinstorCluster
+metadata:
+  name: linstorcluster
+  namespace: piraeus-datastore
+spec:
+  internalTLS:
+    secretName: linstor-controller-internal-tls
+  nodeSelector:
+    node-role.kubernetes.io/worker: ""

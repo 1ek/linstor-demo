@@ -1,0 +1,27 @@
+cluster:
+  network:
+    cni:
+      name: none
+  proxy:
+    disabled: true
+
+  apiServer: 
+    certSANs: 
+      - k8s.demo.local
+
+  discovery:
+      enabled: true 
+      registries:
+        kubernetes:
+          disabled: false
+        service:
+          disabled: true
+
+machine:
+  install:
+    image: ghcr.io/siderolabs/installer:v1.6.7
+
+  features:
+    kubePrism:
+      enabled: true
+      port: 7445

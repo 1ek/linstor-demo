@@ -1,0 +1,34 @@
+cluster:
+  network:
+    cni:
+      name: none
+  proxy:
+    disabled: true
+
+  discovery:
+      enabled: true 
+      registries:
+        kubernetes:
+          disabled: false
+        service:
+          disabled: true
+
+
+machine:
+  install:
+    image: factory.talos.dev/installer/e048aaf4461ff9f9576c9a42f760f2fef566559bd4933f322853ac291e46f238:v1.6.7
+
+  kernel:
+    modules:
+      - name: drbd
+        parameters:
+          - usermode_helper=disabled
+      - name: drbd_transport_tcp
+
+  features:
+    kubePrism:
+      enabled: true
+      port: 7445
+
+  nodeLabels:
+      node-role.kubernetes.io/worker: ""

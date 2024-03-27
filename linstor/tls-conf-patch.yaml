@@ -1,0 +1,7 @@
+apiVersion: piraeus.io/v1
+kind: LinstorSatelliteConfiguration
+metadata:
+  name: internal-tls
+spec:
+  internalTLS:
+    secretName: linstor-satellite-internal-tls
