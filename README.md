@@ -1,13 +1,13 @@
-# LINSTOR demo
+# Talos Linux + LINSTOR demo
 
 ```
 talosctl gen secrets
 ```
 
 ```
-talosctl gen config demo https://10.0.100.206:6443 \
-    --config-patch-control-plane @patch-master.yaml \
-    --config-patch-worker @patch-worker.yaml \
+talosctl gen config demo https://10.0.100.212:6443 \
+    --config-patch-control-plane @patches/patch-master.yaml \
+    --config-patch-worker @patches/patch-worker.yaml \
     --with-secrets secrets.yaml
 ```
 
@@ -75,3 +75,6 @@ task linstor
 k apply -f linstor/sc.yaml 
 ```
 
+```
+task test
+```
